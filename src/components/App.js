@@ -3,11 +3,13 @@ import styled from 'styled-components'
 
 import { Canvas } from '@react-three/fiber'
 import Earth from './Earth/Earth'
+import HeroText from './HeroText/HeroText'
 
 function App() {
   return (
     <Fragment>
       <CanvasContainer>
+        <HeroText />
         <Canvas>
           <Suspense fallback={null}>
             <Earth />

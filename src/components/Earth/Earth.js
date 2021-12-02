@@ -1,5 +1,5 @@
-import React, { Fragment } from 'react'
-import { useLoader } from '@react-three/fiber'
+import React, { Fragment, useRef } from 'react'
+import { useFrame, useLoader } from '@react-three/fiber'
 import { TextureLoader } from 'three'
 import { OrbitControls, Stars } from '@react-three/drei'
 
@@ -15,15 +15,37 @@ const Earth = (props) => {
     TextureLoader,
     [EarthDayMap, EarthNormal, EarthSpecular, EarthClouds]
   )
+  const earthRef = useRef()
+  const cloudRef = useRef()
+  const starRef = useRef()
+
+  // rotate the earth on 60 FPS
+  useFrame(({ clock }) => {
+    const elapsedTime = clock.getElapsedTime()
+    earthRef.current.rotation.y = elapsedTime / 8
+    earthRef.current.rotation.x = elapsedTime / 600
+    cloudRef.current.rotation.y = elapsedTime / 8
+    cloudRef.current.rotation.x = elapsedTime / 550
+    // moving the star
+    starRef.current.rotation.y = elapsedTime / 60
+    starRef.current.rotation.x = elapsedTime / 120
+  })
   return (
     <Fragment>
-      <ambientLight intensity={1} />
+      {/* <ambientLight intensity={1} /> */}
 
-      <pointLight color='#fffed' position={[2, 0, 2]} intensity={1.2} />
+      <pointLight color='#fffed' position={[2, 0, 5]} intensity={1.2} />
 
       {/* adding stars to our scene */}
-      <Stars radius={300} depth={60} count={10000} factor={7} fade={true} />
-      <mesh>
+      <Stars
+        ref={starRef}
+        radius={300}
+        depth={60}
+        count={10000}
+        factor={7}
+        fade={true}
+      />
+      <mesh ref={cloudRef} position={[0, 0, 3]}>
         <sphereGeometry args={[1.005, 32, 32]} />
         <meshPhongMaterial
           map={cloudMap}
@@ -33,12 +55,18 @@ const Earth = (props) => {
           side={THREE.DoubleSide}
         />
       </mesh>
-      <mesh>
+      {/* position={[0, 0, 3]} */}
+      <mesh ref={earthRef} position={[0, 0, 3]}>
         {/* geomatery */}
         <sphereGeometry args={[1, 32, 32]} />
         {/* material */}
         <meshPhongMaterial specularMap={specularMap} />
-        <meshStandardMaterial map={colorMap} normalMap={normalMap} />
+        <meshStandardMaterial
+          map={colorMap}
+          normalMap={normalMap}
+          metalness={0.4}
+          roughness={0.6}
+        />
 
         {/* Orbit Controls */}
         <OrbitControls
