@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react'
 import { useLoader } from '@react-three/fiber'
 import { TextureLoader } from 'three'
-import { OrbitControls } from '@react-three/drei'
+import { OrbitControls, Stars } from '@react-three/drei'
 
 import EarthDayMap from '../../assets/textures/8k_earth_daymap.jpg'
 import EarthClouds from '../../assets/textures/8k_earth_clouds.jpg'
@@ -11,17 +11,22 @@ import EarthSpecular from '../../assets/textures/8k_earth_specular_map.jpg'
 import * as THREE from 'three'
 
 const Earth = (props) => {
-  const [colorMap, normalMap, cloudsMap, specularMap] = useLoader(
+  const [colorMap, normalMap, specularMap, cloudMap] = useLoader(
     TextureLoader,
-    [EarthDayMap, EarthClouds, EarthSpecular, EarthNormal]
+    [EarthDayMap, EarthNormal, EarthSpecular, EarthClouds]
   )
   return (
     <Fragment>
       <ambientLight intensity={1} />
+
+      <pointLight color='#fffed' position={[2, 0, 2]} intensity={1.2} />
+
+      {/* adding stars to our scene */}
+      <Stars radius={300} depth={60} count={10000} factor={7} fade={true} />
       <mesh>
         <sphereGeometry args={[1.005, 32, 32]} />
         <meshPhongMaterial
-          map={cloudsMap}
+          map={cloudMap}
           opacity={0.4}
           depthWrite={true}
           transparent={true}
